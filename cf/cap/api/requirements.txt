@@ -1,0 +1,5 @@
+apifairy~=1.4.0
+cfenv~=0.5.3
+flask~=2.3.3
+python-dotenv
+sap-xssec

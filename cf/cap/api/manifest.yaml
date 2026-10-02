@@ -1,0 +1,6 @@
+---
+applications:
+  - name: calculus-fahrenheit-api
+    memory: 64M
+    buildpacks:
+      - python_buildpack

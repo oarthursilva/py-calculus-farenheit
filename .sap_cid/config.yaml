@@ -1,0 +1,22 @@
+---
+stages:
+  build:
+    buildTool: mta
+    buildDescriptor: cf/standalone/mta.yaml
+    buildToolVersion: MBTJ21N22
+  malwareScan:
+    scan: true
+  acceptance:
+    cfDeploy:
+      strategy: default
+      apiEndpoint: "https://api.cf.br10.hana.ondemand.com"
+      org: "Atem Distribuidora de Petroleo Ltda_applications-homologacao"
+      space: "dev"
+      credential: "cf-secretkey"
+  release:
+    cfDeploy:
+      strategy: default
+      apiEndpoint: "https://api.cf.br10.hana.ondemand.com"
+      org: "Atem Distribuidora de Petroleo Ltda_applications-producao"
+      space: "prod"
+      credential: "cf-secretkey"

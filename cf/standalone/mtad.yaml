@@ -1,0 +1,35 @@
+ID: calculus-fahrenheit-api
+_schema-version: "3.2"
+version: 1.0.0
+
+modules:
+  - name: calculus-fahrenheit-api
+    type: python
+    path: ../cap/api/
+    parameters:
+      memory: 64M
+      disk-quota: 512M
+      host: calculus-fahrenheit-api-${space}
+      domain: cfapps.br10.hana.ondemand.com
+    provides:
+      - name: srv_api
+        properties:
+          url: ${default-url}
+    requires:
+      - name: calculus-fahrenheit-api-uaa
+
+# resources:
+#   - name: calculus-fahrenheit-api-uaa
+#     parameters:
+#       path: ./xs-security.json
+#       service-plan: application
+#       service: xsuaa
+#     type: org.cloudfoundry.managed-service
+
+resources:
+  - name: calculus-fahrenheit-api-uaa
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: py-uaa
+#      service-keys:
+#        - name: calculus-fahrenheit-api-uaa-key

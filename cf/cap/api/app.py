@@ -1,6 +1,6 @@
 from apifairy import APIFairy
 from cfenv import AppEnv
-from flask import Flask, request, abort
+from flask import Flask, request, abort, g
 from sap import xssec
 
 from config import Config
@@ -17,34 +17,35 @@ def create_app(config_class=Config):
 
     # blueprints
     from controllers import fahrenheit
-    app.register_blueprint(fahrenheit, url_prefix='/to')
+
+    app.register_blueprint(fahrenheit, url_prefix="/to")
 
     @app.before_request
     def before_request():
-        if 'authorization' not in request.headers:
+        auth = request.headers.get("Authorization", "")
+        if not auth.lower().startswith("bearer "):
+            abort(401)
+
+        service = env.get_service(name="py-uaa")
+
+        if service is None:
+            abort(403)  # keep the local-dev switch you already have if needed
+
+        creds = service.credentials
+
+        try:
+            ctx = xssec.create_security_context(auth[7:], creds)
+        except Exception:
+            abort(401)
+
+        if not ctx.check_scope(f"{creds['xsappname']}.Calculate"):
             abort(403)
 
-        service = env.get_service(name='py-uaa')
+        g.security_context = ctx
 
-        if service is not None:
-            uaa_service = service.credentials
-            access_token = request.headers.get('authorization')[7:]
-            security_context = xssec.create_security_context(access_token, uaa_service)
-            isAuthorized = security_context.check_scope('uaa.resource')
-        else:
-            # Ambiente local sem instância `py-uaa`: descomenta a linha seguinte
-            # (`isAuthorized = True`) para aceitar pedidos só com cabeçalho
-            # Authorization presente, sem validar JWT. Mantém `False` em CF
-            # se o binding falhar (API fechada). Não comites `True` para produção.
-            # isAuthorized = True
-            isAuthorized = False
-
-        if not isAuthorized:
-            abort(403)
-
-    @app.route('/')
+    @app.route("/")
     def index():
-        return 'Conversao Fahrenheit'
+        return "Conversao Fahrenheit"
 
     @app.after_request
     def after_request(res):

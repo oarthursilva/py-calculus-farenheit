@@ -1,10 +1,37 @@
 {
   "xsappname": "calculus-fahrenheit",
   "tenant-mode": "dedicated",
-  "description": "Security profile of called application",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Calculate",
+      "description": "Call the fahrenheit API"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "Calculator",
+      "description": "Can calculate",
+      "scope-references": [
+        "$XSAPPNAME.Calculate"
+      ]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "Calculus Fahrenheit User",
+      "role-template-references": [
+        "$XSAPPNAME.Calculator"
+      ]
+    }
+  ],
   "oauth2-configuration": {
+    "grant-types": [
+      "authorization_code",
+      "client_credentials",
+      "refresh_token"
+    ],
     "redirect-uris": [
-      "https://*.cfapps.br10.hana.ondemand.com/**"
+      "https://*.cfapps.us10.hana.ondemand.com/**"
     ]
   }
 }

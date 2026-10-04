@@ -1,8 +1,31 @@
 ID: calculus-fahrenheit-api
-_schema-version: "3.2"
+_schema-version: "3.3.0"
 version: 1.0.0
 
 modules:
+  - name: calculus-fahrenheit-approuter
+    type: approuter.nodejs
+    path: ../cap/approuter
+    parameters:
+      memory: 128M
+      # disk-quota: 2048M
+      buildpack: python_buildpack
+      # space alvo: mcp  ->  host atem-abap-mcp-server-mcp
+      host: calculus-fahrenheit-${space}
+      # domain: cfapps.br10.hana.ondemand.com
+      health-check-type: http
+      health-check-http-endpoint: /health
+      # Unico ponto que define o comando de start (nao ha Procfile)
+      # command: python src/aws_abap_accelerator/enterprise_main.py
+    requires:
+      - name: calculus-fahrenheit-api-uaa
+      - name: srv_api
+        group: destinations
+        properties:
+          name: srv_api
+          url: ~{url}
+          forwardAuthToken: true
+
   - name: calculus-fahrenheit-api
     type: python
     path: ../cap/api/
@@ -30,6 +53,6 @@ resources:
   - name: calculus-fahrenheit-api-uaa
     type: org.cloudfoundry.existing-service
     parameters:
-      service-name: py-uaa
+      service-name: uaa
 #      service-keys:
 #        - name: calculus-fahrenheit-api-uaa-key

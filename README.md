@@ -80,7 +80,7 @@ Para executar a API localmente, deve primeiramente mover para a pasta da API e e
 Na primeira vez, a partir da **raiz do repositório**, instala as dependências:
 
 ```bash
-pip install -r cf/cap/api/requirements.txt
+pip3 install -r cf/cap/api/requirements.txt
 ```
 
 Depois:
